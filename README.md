@@ -8,12 +8,14 @@ A small CLI python utility created for cutting down on non-dialogue sections of 
 - Terminal which supports ANSI/VT100 escape sequences
 
 ## Usage
+0. Clone this repo 
 1. Open command prompt, powershell, or other terminal software
-2. Open the .py file with python along with the needed arguments: `py dialogueify.py <video.mp4> <subtitles.srt> <Output Filename> [-ao]`
+2. Open the .py file with python along with the needed arguments: `py dialogueify.py <video.mp4> <subtitles.xxx> <Output Filename> [-ao]`
 
 ### Arguments and flags
 - `<video.mp4>` - Path to video file - Format: forward slashes, example: `c:/users/dummy/desktop/video.mp4`
-- `<subtitles.srt>` - Path to the subtitle file - Format: forward slashes, example: `c:/users/dummy/desktop/subs.srt`
+- `<subtitles.xxx>` - Path to the subtitle file - Format: forward slashes, example: `c:/users/dummy/desktop/subs.srt`
+   - Currently, formats `.srt` and `.json3` are supported for subtitle files, and all video formats supported by ffmpeg for video files.
 - `<Output filename>` - Name of output file - The file will be given an extension based on the flags. The default is .mp4, example: `./dielogueified_video.mp4`
 - `[-ao]` - Audio Only - Generates a .mp3 file instead of the default .mp4, much faster than the default
 
@@ -30,10 +32,11 @@ Cutting down on non-dialogue parts of videos allows language learners to focus o
 
 ## Roadmap
 - More customization
-  - More formats, ideally detected automatically both for subtitles and for video
+  - More output formats
   - Customizable timing for padding and grouping
     - Account for padding being bigger than grouping
 - Allow pairing of audio files with subtitles
 - Long term: create a swiss army knife of utilities and include this one in it
 - More input validation of arguments and proper handling of improper input
 - Descriptive error messages with error handling (improper suttiles format, insufficient space...)
+- Fix double big-progress bar bug
