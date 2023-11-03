@@ -44,17 +44,17 @@ def main(args):
     
     with tempfile.TemporaryDirectory() as temp_files_folder:
         global temp_files
-        temp_files.append(temp_files_folder)
+        temp_files.insert(0, temp_files_folder)
         
         try:
-            print("Finding gaps...\n")
+            print("Finding gaps...")
             gaps = analyze_subtitle_file(subtitle_file)
             
             print("Creating clips..." + "\n" * 4, end="") # Newlines for space
             create_clips(input_video, gaps, temp_files_folder, audio_only)
             
             print("Stitching video...")
-            concatenate_clips(temp_files, output_file, audio_only)
+            concatenate_clips(output_file, audio_only)
         except KeyboardInterrupt as k:
             halt("Program keyboard interrupted, halting...", k)
         except Exception as e:
@@ -100,21 +100,24 @@ def create_clips(input_video, gaps, temp_files_folder, audio_only=False):
         
         if audio_only:
             temp_output_file = os.path.join(temp_files_folder, f"temp_trimmed_{i}.mp3")
-            
         else:
             temp_output_file = os.path.join(temp_files_folder, f"temp_trimmed_{i}.mp4")
         
         clear_lines(4)
-        create_progress_bar(i+1, len(gaps), length = 50) #i+1 so that pgoress bar ends at 100%, not 99%
+        create_progress_bar(i + 1, len(gaps), length=50)  # i+1 so that progress bar ends at 100%, not 99%
         run_ffmpeg_command(["ffmpeg", "-ss", start_time_str, "-i", input_video, "-t", duration_str, temp_output_file])
         
         temp_files.append(temp_output_file)
 
-def concatenate_clips(temp_files, output_file, audio_only=False):
+def concatenate_clips(output_file, audio_only=False):
+    global temp_files
+
+    
     concat_txt = os.path.normpath(os.path.join(tempfile.gettempdir(), "concat.txt"))
-    temp_files.append(concat_txt)
+    temp_files.insert(0, concat_txt)
+    
     with open(concat_txt, "w") as txtfile:
-        for file in temp_files[1::-1]:
+        for file in temp_files[2::]:
             txtfile.write(f"file '{file}'\n")
 
     run_ffmpeg_command(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", concat_txt, "-c:a", "copy", output_file])
@@ -161,6 +164,7 @@ def run_ffmpeg_command(command):
             print(line.strip())
 
         process.communicate()  # Wait for the process to finish
+        
         if process.returncode != 0:
             raise subprocess.CalledProcessError(process.returncode, command)
 
